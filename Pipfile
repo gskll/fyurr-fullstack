@@ -1,0 +1,19 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+python-dateutil = "==2.6.0"
+Babel = "*"
+Flask-Moment = "*"
+Flask-WTF = "*"
+sqlalchemy = "*"
+flask = "*"
+flask-migrate = "*"
+postgres = "*"
+
+[dev-packages]
+
+[requires]
+python_version = "3.9"
