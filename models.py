@@ -32,16 +32,35 @@ class Venue(db.Model):
     def serialize(self):
         return {'id': self.id,
                 'name': self.name,
-                'genres': self.genres.split(','),
                 'city': self.city,
                 'state': self.state,
-                'phone': self.phone,
                 'address': self.address,
+                'phone': self.phone,
+                'website': self.website,
                 'image_link': self.image_link,
                 'facebook_link': self.facebook_link,
-                'website': self.website,
+                'genres': self.genres.split(','),
                 'seeking_talent': self.seeking_talent,
-                'seeking_description': self.seeking_description
+                'seeking_description': self.seeking_description,
+                }
+
+    @property
+    def serialize_upcoming_shows(self):
+        return {'id': self.id,
+                'name': self.name,
+                'city': self.city,
+                'state': self.state,
+                'address': self.address,
+                'phone': self.phone,
+                'website': self.website,
+                'image_link': self.image_link,
+                'facebook_link': self.facebook_link,
+                'genres': self.genres.split(','),
+                'seeking_talent': self.seeking_talent,
+                'seeking_description': self.seeking_description,
+                'num_upcoming_shows': Show.query.filter(
+                    Show.start_time > datetime.datetime.now(),
+                    Show.venue_id == self.id)
                 }
 
 

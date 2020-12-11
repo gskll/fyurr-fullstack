@@ -58,29 +58,20 @@ def index():
 
 @ app.route('/venues')
 def venues():
-    # TODO: replace with real venues data.
-    #       num_shows should be aggregated based on number of upcoming shows per venue.
-    data = [{
-        "city": "San Francisco",
-        "state": "CA",
-        "venues": [{
-            "id": 1,
-            "name": "The Musical Hop",
-            "num_upcoming_shows": 0,
-        }, {
-            "id": 3,
-            "name": "Park Square Live Music & Coffee",
-            "num_upcoming_shows": 1,
-        }]
-    }, {
-        "city": "New York",
-        "state": "NY",
-        "venues": [{
-            "id": 2,
-            "name": "The Dueling Pianos Bar",
-            "num_upcoming_shows": 0,
-        }]
-    }]
+    # Returns first Venue for each  distinct city/state
+    distinct_locations = Venue.query.distinct(Venue.city, Venue.state).all()
+
+    data = []
+
+    for location in distinct_locations:
+        d = {"city": location.city, "state": location.state}
+        venues_list = Venue.query.filter(
+            Venue.city == location.city, Venue.state == location.state).all()
+        venues = [venue.serialize for venue in venues_list]
+        d["venues"] = venues
+
+        data.append(d)
+
     return render_template('pages/venues.html', areas=data)
 
 
@@ -197,34 +188,32 @@ def create_venue_form():
 
 @app.route('/venues/create', methods=['POST'])
 def create_venue_submission():
-    # TODO: insert form data as a new Venue record in the db, instead
-    # TODO: modify data to be the data object returned from db insertion
     form = VenueForm(request.form)
 
     try:
-      new_venue = Venue(
-        name=form.name.data,
-        city=form.city.data,
-        state=form.state.data,
-        address=form.address.data,
-        phone=form.phone.data,
-        website=form.website.data,
-        image_link=form.image_link.data,
-        genres=','.join(form.genres.data),
-        facebook_link=form.facebook_link.data,
-        seeking_talent=form.seeking_talent.data,
-        seeking_description=form.seeking_description.data
+        new_venue = Venue(
+            name=form.name.data,
+            city=form.city.data,
+            state=form.state.data,
+            address=form.address.data,
+            phone=form.phone.data,
+            website=form.website.data,
+            image_link=form.image_link.data,
+            genres=','.join(form.genres.data),
+            facebook_link=form.facebook_link.data,
+            seeking_talent=form.seeking_talent.data,
+            seeking_description=form.seeking_description.data
         )
-      db.session.add(new_venue)
-      db.session.commit()
+        db.session.add(new_venue)
+        db.session.commit()
 
-      flash('Venue ' + request.form['name'] + ' was successfully listed!')
+        flash('Venue ' + request.form['name'] + ' was successfully listed!')
     except:
-      db.session.rollback()
-      flash('Error: Venue ' + request.form['name'] + ' could not be added!')
-      traceback.print_exc()
+        db.session.rollback()
+        flash('Error: Venue ' + request.form['name'] + ' could not be added!')
+        traceback.print_exc()
     finally:
-      db.session.close()
+        db.session.close()
 
     return render_template('pages/home.html')
 
@@ -245,7 +234,7 @@ def delete_venue(venue_id):
 @ app.route('/artists')
 def artists():
     # TODO: replace with real data returned from querying the database
-    data=[{
+    data = [{
         "id": 4,
         "name": "Guns N Petals",
     }, {
@@ -263,7 +252,7 @@ def search_artists():
     # TODO: implement search on artists with partial string search. Ensure it is case-insensitive.
     # seach for "A" should return "Guns N Petals", "Matt Quevado", and "The Wild Sax Band".
     # search for "band" should return "The Wild Sax Band".
-    response={
+    response = {
         "count": 1,
         "data": [{
             "id": 4,
@@ -278,7 +267,7 @@ def search_artists():
 def show_artist(artist_id):
     # shows the venue page with the given venue_id
     # TODO: replace with real venue data from the venues table, using venue_id
-    data1={
+    data1 = {
         "id": 4,
         "name": "Guns N Petals",
         "genres": ["Rock n Roll"],
@@ -300,7 +289,7 @@ def show_artist(artist_id):
         "past_shows_count": 1,
         "upcoming_shows_count": 0,
     }
-    data2={
+    data2 = {
         "id": 5,
         "name": "Matt Quevedo",
         "genres": ["Jazz"],
@@ -320,7 +309,7 @@ def show_artist(artist_id):
         "past_shows_count": 1,
         "upcoming_shows_count": 0,
     }
-    data3={
+    data3 = {
         "id": 6,
         "name": "The Wild Sax Band",
         "genres": ["Jazz", "Classical"],
@@ -349,7 +338,7 @@ def show_artist(artist_id):
         "past_shows_count": 0,
         "upcoming_shows_count": 3,
     }
-    data=list(filter(lambda d: d['id'] ==
+    data = list(filter(lambda d: d['id'] ==
                        artist_id, [data1, data2, data3]))[0]
     return render_template('pages/show_artist.html', artist=data)
 
@@ -359,8 +348,8 @@ def show_artist(artist_id):
 
 @ app.route('/artists/<int:artist_id>/edit', methods=['GET'])
 def edit_artist(artist_id):
-    form=ArtistForm()
-    artist={
+    form = ArtistForm()
+    artist = {
         "id": 4,
         "name": "Guns N Petals",
         "genres": ["Rock n Roll"],
@@ -387,8 +376,8 @@ def edit_artist_submission(artist_id):
 
 @ app.route('/venues/<int:venue_id>/edit', methods=['GET'])
 def edit_venue(venue_id):
-    form=VenueForm()
-    venue={
+    form = VenueForm()
+    venue = {
         "id": 1,
         "name": "The Musical Hop",
         "genres": ["Jazz", "Reggae", "Swing", "Classical", "Folk"],
@@ -418,7 +407,7 @@ def edit_venue_submission(venue_id):
 
 @ app.route('/artists/create', methods=['GET'])
 def create_artist_form():
-    form=ArtistForm()
+    form = ArtistForm()
     return render_template('forms/new_artist.html', form=form)
 
 
@@ -443,7 +432,7 @@ def shows():
     # displays list of shows at /shows
     # TODO: replace with real venues data.
     #       num_shows should be aggregated based on number of upcoming shows per venue.
-    data=[{
+    data = [{
         "venue_id": 1,
         "venue_name": "The Musical Hop",
         "artist_id": 4,
@@ -485,7 +474,7 @@ def shows():
 @ app.route('/shows/create')
 def create_shows():
     # renders form. do not touch.
-    form=ShowForm()
+    form = ShowForm()
     return render_template('forms/new_show.html', form=form)
 
 
@@ -513,7 +502,7 @@ def server_error(error):
 
 
 if not app.debug:
-    file_handler=FileHandler('error.log')
+    file_handler = FileHandler('error.log')
     file_handler.setFormatter(
         Formatter(
             '%(asctime)s %(levelname)s: %(message)s [in %(pathname)s:%(lineno)d]')
