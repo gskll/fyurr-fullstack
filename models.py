@@ -26,7 +26,7 @@ class Venue(db.Model):
     seeking_description = db.Column(db.String(120))
 
     def __repr__(self):
-        return f'<Venue {self.id} {self.name}>'
+        return f'<Venue#{self.id}: {self.name}>'
 
     @property
     def serialize(self):
@@ -80,7 +80,7 @@ class Artist(db.Model):
     seeking_description = db.Column(db.String(120))
 
     def __repr__(self):
-        return f'<Artist {self.id} {self.name}'
+        return f'<Artist#{self.id}: {self.name}>'
 
     @property
     def serialize(self):
@@ -117,4 +117,4 @@ class Show(db.Model):
         'shows', cascade='all,delete'))
 
     def __repr__(self):
-        return f'<Show {self.artist} {self.venue}>'
+        return f'<Show#{self.id}: {self.artist} {self.venue}>'
