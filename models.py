@@ -45,7 +45,7 @@ class Venue(db.Model):
                 }
 
     @property
-    def serialize_upcoming_shows(self):
+    def serialize_all_shows(self):
         return {'id': self.id,
                 'name': self.name,
                 'city': self.city,
@@ -81,6 +81,21 @@ class Artist(db.Model):
 
     def __repr__(self):
         return f'<Artist {self.id} {self.name}'
+
+    @property
+    def serialize(self):
+        return {'id': self.id,
+                'name': self.name,
+                'city': self.city,
+                'state': self.state,
+                'phone': self.phone,
+                'website': self.website,
+                'image_link': self.image_link,
+                'facebook_link': self.facebook_link,
+                'genres': self.genres.split(','),
+                'seeking_venue': self.seeking_venue,
+                'seeking_description': self.seeking_description,
+                }
 
 
 class Show(db.Model):
