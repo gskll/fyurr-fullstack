@@ -1,21 +1,21 @@
+from models import db, Venue, Artist, Show
+from forms import *
+from flask_wtf import FlaskForm
+from logging import Formatter, FileHandler
+from flask_migrate import Migrate
+import logging
+from flask_sqlalchemy import SQLAlchemy
+from flask_moment import Moment
+from flask import Flask, render_template, request, Response, flash, redirect, url_for, abort
+import babel
+import traceback
+import dateutil.parser
+import json
 #----------------------------------------------------------------------------#
 # Imports
 #----------------------------------------------------------------------------#
 
-import json
-import dateutil.parser
-import traceback
-import babel
-from flask import Flask, render_template, request, Response, flash, redirect, url_for, abort
-from flask_moment import Moment
-from flask_sqlalchemy import SQLAlchemy
-import logging
-from flask_migrate import Migrate
-from logging import Formatter, FileHandler
-from flask_wtf import FlaskForm
-from forms import *
 
-from models import db, Venue, Artist, Show
 #----------------------------------------------------------------------------#
 # App Config.
 #----------------------------------------------------------------------------#
@@ -368,14 +368,25 @@ def create_shows():
 
 @ app.route('/shows/create', methods=['POST'])
 def create_show_submission():
-    # called to create new shows in the db, upon submitting new show listing form
-    # TODO: insert form data as a new Show record in the db, instead
+    form = ShowForm(request.form)
 
-    # on successful db insert, flash success
-    flash('Show was successfully listed!')
-    # TODO: on unsuccessful db insert, flash an error instead.
-    # e.g., flash('An error occurred. Show could not be listed.')
-    # see: http://flask.pocoo.org/docs/1.0/patterns/flashing/
+    try:
+        new_show = Show(
+            artist_id=form.artist_id.data,
+            venue_id=form.venue_id.data,
+            start_time=form.start_time.data
+        )
+        db.session.add(new_show)
+        db.session.commit()
+
+        flash('Show was successfully listed!')
+    except:
+        db.session.rollback()
+        flash('Error: Show could not be added!')
+        traceback.print_exc()
+    finally:
+        db.session.close()
+
     return render_template('pages/home.html')
 
 
