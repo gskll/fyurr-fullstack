@@ -6,7 +6,10 @@
 		<h1 class="monospace">
 			{{ artist.name }}
 		</h1>
-		<p class="subtitle">
+    <form action="{{url_for('edit_artist', artist_id=artist.id)}}" method="get">
+      <button type="submit" class="btn btn-primary"><i class="fas fa-edit"></i> Edit Artist</button>
+    </form>
+			<p class="subtitle">
 			ID: {{ artist.id }}
 		</p>
 		<div class="genres">
