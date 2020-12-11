@@ -12,7 +12,7 @@ from flask_sqlalchemy import SQLAlchemy
 import logging
 from flask_migrate import Migrate
 from logging import Formatter, FileHandler
-from flask_wtf import Form
+from flask_wtf import FlaskForm
 from forms import *
 
 from models import db, Venue, Artist, Show
@@ -341,19 +341,37 @@ def create_artist_form():
 
 @ app.route('/artists/create', methods=['POST'])
 def create_artist_submission():
-    # called upon submitting the new artist listing form
-    # TODO: insert form data as a new Venue record in the db, instead
-    # TODO: modify data to be the data object returned from db insertion
+    form = ArtistForm(request.form)
 
-    # on successful db insert, flash success
-    flash('Artist ' + request.form['name'] + ' was successfully listed!')
-    # TODO: on unsuccessful db insert, flash an error instead.
-    # e.g., flash('An error occurred. Artist ' + data.name + ' could not be listed.')
+    try:
+        new_artist = Artist(
+            name=form.name.data,
+            city=form.city.data,
+            state=form.state.data,
+            phone=form.phone.data,
+            website=form.website.data,
+            image_link=form.image_link.data,
+            genres=','.join(form.genres.data),
+            facebook_link=form.facebook_link.data,
+            seeking_venue=form.seeking_venue.data,
+            seeking_description=form.seeking_description.data
+        )
+        db.session.add(new_artist)
+        db.session.commit()
+
+        flash('Artist ' + request.form['name'] + ' was successfully listed!')
+    except:
+        db.session.rollback()
+        flash('Error: Artist ' + request.form['name'] + ' could not be added!')
+        traceback.print_exc()
+    finally:
+        db.session.close()
+
     return render_template('pages/home.html')
-
 
 #  Shows
 #  ----------------------------------------------------------------
+
 
 @ app.route('/shows')
 def shows():
