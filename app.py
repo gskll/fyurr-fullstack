@@ -72,6 +72,7 @@ def venues():
         ).all()
 
         venues = [venue.serialize for venue in venues_list]
+
         d["venues"] = venues
 
         data.append(d)
@@ -107,7 +108,7 @@ def show_venue(venue_id):
     if venue is None:
         abort(404)
 
-    data = venue.serialize
+    data = venue.serialize_with_shows
 
     return render_template('pages/show_venue.html', venue=data)
 
@@ -204,6 +205,7 @@ def show_artist(artist_id):
     if artist is None:
         abort(404)
 
+    # TODO: add show data to serialize
     data = artist.serialize
 
     return render_template('pages/show_artist.html', artist=data)

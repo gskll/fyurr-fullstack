@@ -45,7 +45,20 @@ class Venue(db.Model):
                 }
 
     @property
-    def serialize_all_shows(self):
+    def serialize_with_shows(self):
+        upcoming_shows_list = Show.query.filter(
+            Show.venue_id == self.id,
+            Show.start_time > datetime.datetime.now()
+        )
+
+        upcoming_shows = [s.serialize for s in upcoming_shows_list]
+        past_shows_list = Show.query.filter(
+            Show.venue_id == self.id,
+            Show.start_time <= datetime.datetime.now()
+        )
+
+        past_shows = [s.serialize for s in past_shows_list]
+
         return {'id': self.id,
                 'name': self.name,
                 'city': self.city,
@@ -58,9 +71,10 @@ class Venue(db.Model):
                 'genres': self.genres.split(','),
                 'seeking_talent': self.seeking_talent,
                 'seeking_description': self.seeking_description,
-                'num_upcoming_shows': Show.query.filter(
-                    Show.start_time > datetime.datetime.now(),
-                    Show.venue_id == self.id)
+                'upcoming_shows_count': len(upcoming_shows),
+                'upcoming_shows': upcoming_shows,
+                'past_shows_count': len(past_shows),
+                'past_shows': past_shows,
                 }
 
 
