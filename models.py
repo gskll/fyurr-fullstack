@@ -118,3 +118,14 @@ class Show(db.Model):
 
     def __repr__(self):
         return f'<Show#{self.id}: {self.artist} {self.venue}>'
+
+    @property
+    def serialize(self):
+        return {
+            'id': self.id,
+            'start_time': self.start_time.strftime("%m/%d/%Y, %H:%M:%S"),
+            'artist_id': self.artist_id,
+            'venue_id': self.venue_id,
+            'artist': self.artist.serialize,
+            'venue': self.venue.serialize
+        }
