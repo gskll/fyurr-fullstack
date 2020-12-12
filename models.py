@@ -111,6 +111,38 @@ class Artist(db.Model):
                 'seeking_description': self.seeking_description,
                 }
 
+    @property
+    def serialize_with_shows(self):
+        upcoming_shows_list = Show.query.filter(
+            Show.venue_id == self.id,
+            Show.start_time > datetime.datetime.now()
+        )
+
+        upcoming_shows = [s.serialize for s in upcoming_shows_list]
+        past_shows_list = Show.query.filter(
+            Show.venue_id == self.id,
+            Show.start_time <= datetime.datetime.now()
+        )
+
+        past_shows = [s.serialize for s in past_shows_list]
+
+        return {'id': self.id,
+                'name': self.name,
+                'city': self.city,
+                'state': self.state,
+                'phone': self.phone,
+                'website': self.website,
+                'image_link': self.image_link,
+                'facebook_link': self.facebook_link,
+                'genres': self.genres.split(','),
+                'seeking_venue': self.seeking_venue,
+                'seeking_description': self.seeking_description,
+                'upcoming_shows_count': len(upcoming_shows),
+                'upcoming_shows': upcoming_shows,
+                'past_shows_count': len(past_shows),
+                'past_shows': past_shows,
+                }
+
 
 class Show(db.Model):
     __tablename__ = 'shows'

@@ -205,8 +205,7 @@ def show_artist(artist_id):
     if artist is None:
         abort(404)
 
-    # TODO: add show data to serialize
-    data = artist.serialize
+    data = artist.serialize_with_shows
 
     return render_template('pages/show_artist.html', artist=data)
 
