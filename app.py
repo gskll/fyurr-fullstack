@@ -283,7 +283,7 @@ def edit_venue_submission(venue_id):
         venue.image_link = form.image_link.data
         venue.genres = ','.join(form.genres.data)
         venue.facebook_link = form.facebook_link.data
-        venue.seeking_talent = bool(form.seeking_talent.data)
+        venue.seeking_talent = form.seeking_talent.data
         venue.seeking_description = form.seeking_description.data
 
         db.session.commit()
